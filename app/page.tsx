@@ -8,7 +8,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { StatusMessage } from "@/components/StatusMessage";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getRecentReportsAsync, searchCompanyReportsAsync, type SearchResult } from "@/lib/search";
-import { getDataSource } from "@/lib/repository";
 import type { Report } from "@/lib/types";
 
 const initialFilters: Filters = {
@@ -16,8 +15,6 @@ const initialFilters: Filters = {
   reportType: "all",
   year: "all",
 };
-
-const dataSourceLabel = getDataSource() === "supabase" ? "官方数据库" : "本地数据";
 
 function filterReports(reports: Report[], filters: Filters): Report[] {
   return reports.filter((report) => {
@@ -37,8 +34,12 @@ export default function Home() {
   const [result, setResult] = useState<SearchResult | null>(null);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [recentReports, setRecentReports] = useState<Report[]>([]);
+  const [dataSourceLabel, setDataSourceLabel] = useState("数据源同步中");
 
   useEffect(() => {
+    setDataSourceLabel(
+      process.env.NEXT_PUBLIC_DATA_SOURCE === "supabase" ? "官方数据库" : "本地数据",
+    );
     getRecentReportsAsync()
       .then(setRecentReports)
       .catch(() => setRecentReports([]));
