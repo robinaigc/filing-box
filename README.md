@@ -103,11 +103,17 @@ npm run sync:sec -- --offset=100 --limit=100
 npm run sync:sec -- --symbol=AAPL
 npm run sync:sec:status
 npm run sync:sec:status -- --status=empty --limit=20
+npm run sync:sec:coverage
+npm run sync:sec:coverage -- --status=missing --limit=50
+npm run sync:sec:coverage -- --status=empty --limit=50
 ```
 
 `sync:sec` records per-company sync status in `public.sec_sync_runs` when the
 `20260507040500_add_sec_sync_runs.sql` migration has been applied. If the table
 is not present yet, sync still runs and prints a warning for status logging only.
+
+`sync:sec:coverage` reports the latest per-company sync state, rather than raw
+log row totals. It is the preferred tool for deciding which SEC batch to run next.
 
 Generate SEC sync SQL without writing to Supabase:
 

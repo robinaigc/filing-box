@@ -1171,6 +1171,9 @@ scripts/sync-sec.ts
 14. 如果 sec_sync_runs 表尚未应用到 Supabase，财报同步不会中断，只会输出状态日志写入警告
 15. 已新增 SEC 同步状态查询脚本：scripts/sec-sync-status.ts
 16. 当前 sec_sync_runs 已记录 1005 条同步状态，其中 success 955、empty 50、failed 0
+17. 已新增 SEC 覆盖率报表脚本：scripts/sec-sync-coverage.ts
+18. 覆盖率报表按每家公司最新同步状态统计，而不是按日志行数统计
+19. 当前覆盖率报表显示：total 2000、latestSuccess 955、latestEmpty 50、latestFailed 0、missingSyncStatus 995、withReports 1134、SEC reports 21374
 ```
 
 ## 30. 阶段二：A股数据源
