@@ -21,7 +21,7 @@ Repository:
 
 当前已同步：
 
-- 美股：已从 SEC `company_tickers_exchange.json` 导入前 500 家公司，并同步 3393 条 SEC 财报元数据
+- 美股：已从 SEC `company_tickers_exchange.json` 导入前 500 家公司，并同步 7855 条 SEC 财报元数据
 - A 股：`600519`、`300750`、`300059`、`002594`、`600036`
 
 ## Local Development
