@@ -1142,6 +1142,16 @@ scripts/sync-sec.ts
 4. CNINFO 查询必须使用 symbol + org_id 精确定位，不能只用关键词
 ```
 
+当前部署状态：
+
+```txt
+1. GitHub 仓库已发布：https://github.com/robinaigc/filing-box
+2. Vercel 生产环境已发布：https://filing-box.vercel.app
+3. Vercel 生产环境已配置 Supabase public 环境变量
+4. 生产域名公开可访问，随机 hashed deployment URL 可能仍显示 Vercel Authentication
+5. PDF 文件仍不存储在 Supabase，线上只通过官方 source_url/download_url 跳转到 SEC 或 CNINFO
+```
+
 ## 30. 阶段二：A股数据源
 
 第二阶段使用巨潮资讯 CNINFO。

@@ -8,7 +8,16 @@
 - Supabase PostgreSQL 数据源
 - 美股 SEC EDGAR 数据已接入当前 seed 公司
 - A 股巨潮资讯 CNINFO 数据已接入当前 seed 公司
+- Vercel 生产环境已发布
 - PDF 文件本体不存储在 Supabase，只保存官方来源链接和下载链接
+
+Production:
+
+- https://filing-box.vercel.app
+
+Repository:
+
+- https://github.com/robinaigc/filing-box
 
 当前已同步：
 
@@ -116,6 +125,14 @@ For Vercel:
 2. Set the public Supabase variables.
 3. Do not set or expose `SUPABASE_SERVICE_ROLE_KEY` unless a server-only sync job needs it.
 4. Keep scheduled SEC/CNINFO sync jobs server-side only.
+
+Current production domain:
+
+```txt
+https://filing-box.vercel.app
+```
+
+Hashed deployment URLs may show Vercel Authentication depending on project protection settings. Use the production domain for public access.
 
 ## Scope
 
