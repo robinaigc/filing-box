@@ -10,7 +10,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   getRecentReportsAsync,
   searchCompanyReports,
-  searchCompanyReportsAsync,
   type SearchResult,
 } from "@/lib/search";
 import type { Report } from "@/lib/types";
@@ -73,7 +72,11 @@ export function HomeClient({
     setIsLoading(true);
     setResult(searchCompanyReports(nextQuery));
     window.setTimeout(() => {
-      searchCompanyReportsAsync(nextQuery)
+      fetch(`/api/search?q=${encodeURIComponent(nextQuery)}`)
+        .then((response) => {
+          if (!response.ok) throw new Error("Search request failed");
+          return response.json() as Promise<SearchResult>;
+        })
         .then(setResult)
         .catch(() =>
           setResult({

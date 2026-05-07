@@ -10,6 +10,7 @@
 - A 股巨潮资讯 CNINFO 数据已接入当前 seed 公司
 - Vercel 生产环境已发布
 - PDF 文件本体不存储在 Supabase，只保存官方来源链接和下载链接
+- 美股采用热门预同步 + 长尾按需同步：搜索未缓存的美股公司时，服务端会从 SEC 拉取并缓存最新财报元数据
 
 Production:
 
@@ -21,7 +22,7 @@ Repository:
 
 当前已同步：
 
-- 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并同步 21374 条 SEC 财报元数据
+- 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
 - A 股：`600519`、`300750`、`300059`、`002594`、`600036`
 
 ## Local Development
@@ -114,6 +115,10 @@ is not present yet, sync still runs and prints a warning for status logging only
 
 `sync:sec:coverage` reports the latest per-company sync state, rather than raw
 log row totals. It is the preferred tool for deciding which SEC batch to run next.
+
+The frontend search path uses `/api/search`. If a matched US company has no
+cached reports, the API performs a lightweight on-demand SEC sync for that one
+company and returns the cached result.
 
 Generate SEC sync SQL without writing to Supabase:
 
