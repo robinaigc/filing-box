@@ -55,7 +55,7 @@ const supabase = createClient(supabaseUrl, serviceRoleKey);
 
 type SecTickerExchangeResponse = {
   fields: string[];
-  data: Array<[number, string, string, string]>;
+  data: Array<[number, string, string, string | null]>;
 };
 
 type CompanyUpsertRow = {
@@ -129,7 +129,7 @@ async function fetchSecCompanies(): Promise<CompanyUpsertRow[]> {
     code: null,
     name,
     display_name: name,
-    exchange,
+    exchange: exchange ?? "UNKNOWN",
     cik: String(cik).padStart(10, "0"),
     org_id: null,
   }));
