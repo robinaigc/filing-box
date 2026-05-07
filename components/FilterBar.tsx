@@ -66,13 +66,13 @@ function FilterSelect({ id, label, value, options, onSelect }: FilterSelectProps
       open={isOpen}
       onToggle={(event) => setIsOpen(event.currentTarget.open)}
     >
-      <span className="filter-label">{label}</span>
       <summary
         className="filter-trigger"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={`${id}-options`}
       >
+        <span className="filter-label">{label}</span>
         <span>{selected.label}</span>
         <span className="chevron" aria-hidden="true" />
       </summary>
