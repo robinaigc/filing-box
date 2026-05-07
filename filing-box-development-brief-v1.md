@@ -1177,6 +1177,8 @@ scripts/sync-sec.ts
 20. 已演进到“热门预同步 + 长尾按需同步”方案：前端搜索走 /api/search
 21. /api/search 命中美股公司但无缓存财报时，会服务端按需拉取 SEC 最新 filings，并写入 reports 与 sec_sync_runs
 22. 按需同步已用 AAL 验证成功：AAL 从 missing 变为 success，新增 20 条 SEC 财报元数据
+23. /api/search 已加入 24 小时 TTL：最近 success / empty / failed 都不会重复打 SEC
+24. /api/search 已修复 Supabase 默认 1000 行限制，companies 和 aliases 均分页读取，支持当前 2000 家公司池搜索
 ```
 
 ## 30. 阶段二：A股数据源

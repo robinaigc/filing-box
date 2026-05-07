@@ -32,6 +32,13 @@ type ReportRow = {
   download_url: string | null;
 };
 
+export type SecSyncRun = {
+  status: "success" | "empty" | "failed";
+  syncedCount: number;
+  errorMessage: string | null;
+  finishedAt: string;
+};
+
 export function createServiceSupabaseClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -126,6 +133,38 @@ export async function getCompanyReports(
 
   if (error) throw error;
   return ((data ?? []) as ReportRow[]).map(mapReport);
+}
+
+export async function getRecentSecSyncRun(
+  supabase: SupabaseClient,
+  symbol: string,
+): Promise<SecSyncRun | null> {
+  const { data, error } = await supabase
+    .from("sec_sync_runs")
+    .select("status, synced_count, error_message, finished_at")
+    .eq("symbol", symbol)
+    .order("finished_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  return {
+    status: data.status as SecSyncRun["status"],
+    syncedCount: Number(data.synced_count ?? 0),
+    errorMessage: data.error_message ?? null,
+    finishedAt: data.finished_at,
+  };
+}
+
+export function isFreshSyncRun(run: SecSyncRun | null, ttlHours = 24): boolean {
+  if (!run) return false;
+
+  const finishedAt = new Date(run.finishedAt).getTime();
+  if (Number.isNaN(finishedAt)) return false;
+
+  return Date.now() - finishedAt < ttlHours * 60 * 60 * 1000;
 }
 
 export async function syncSecReportsForCompany(

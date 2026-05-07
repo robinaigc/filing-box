@@ -3,6 +3,8 @@ import { normalizeQuery } from "@/lib/normalize";
 import {
   createServiceSupabaseClient,
   getCompanyReports,
+  getRecentSecSyncRun,
+  isFreshSyncRun,
   syncSecReportsForCompany,
 } from "@/lib/sec-on-demand";
 import { sortReportsByDate, type SearchResult } from "@/lib/search";
@@ -53,6 +55,47 @@ function mapAlias(row: AliasRow): CompanyAlias {
   };
 }
 
+async function fetchAllCompanies(supabase: ReturnType<typeof createServiceSupabaseClient>) {
+  const rows: CompanyRow[] = [];
+  const pageSize = 1000;
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("companies")
+      .select("id, market, symbol, code, name, display_name, exchange, cik, org_id")
+      .order("symbol", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    const page = (data ?? []) as CompanyRow[];
+    rows.push(...page);
+    if (page.length < pageSize) break;
+  }
+
+  return rows.map(mapCompany);
+}
+
+async function fetchAllAliases(supabase: ReturnType<typeof createServiceSupabaseClient>) {
+  const rows: AliasRow[] = [];
+  const pageSize = 1000;
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("company_aliases")
+      .select("company_id, alias, language, alias_type")
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    const page = (data ?? []) as AliasRow[];
+    rows.push(...page);
+    if (page.length < pageSize) break;
+  }
+
+  return rows.map(mapAlias);
+}
+
 export async function GET(request: Request) {
   const query = new URL(request.url).searchParams.get("q") ?? "";
   const normalized = normalizeQuery(query);
@@ -66,19 +109,10 @@ export async function GET(request: Request) {
 
   try {
     const supabase = createServiceSupabaseClient();
-    const [{ data: companyRows, error: companyError }, { data: aliasRows, error: aliasError }] =
-      await Promise.all([
-        supabase
-          .from("companies")
-          .select("id, market, symbol, code, name, display_name, exchange, cik, org_id"),
-        supabase.from("company_aliases").select("company_id, alias, language, alias_type"),
-      ]);
-
-    if (companyError) throw companyError;
-    if (aliasError) throw aliasError;
-
-    const companies = ((companyRows ?? []) as CompanyRow[]).map(mapCompany);
-    const aliases = ((aliasRows ?? []) as AliasRow[]).map(mapAlias);
+    const [companies, aliases] = await Promise.all([
+      fetchAllCompanies(supabase),
+      fetchAllAliases(supabase),
+    ]);
     const matchedCompanyIds = new Set<string>();
 
     for (const company of companies) {
@@ -124,6 +158,16 @@ export async function GET(request: Request) {
     let reports = await getCompanyReports(supabase, company.id);
 
     if (reports.length === 0 && company.market === "US" && company.cik) {
+      const recentSyncRun = await getRecentSecSyncRun(supabase, company.symbol);
+
+      if (isFreshSyncRun(recentSyncRun)) {
+        return NextResponse.json<SearchResult>({
+          status: "found",
+          company,
+          reports: [],
+        });
+      }
+
       await syncSecReportsForCompany(supabase, company);
       reports = await getCompanyReports(supabase, company.id);
     }

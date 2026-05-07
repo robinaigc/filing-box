@@ -120,6 +120,10 @@ The frontend search path uses `/api/search`. If a matched US company has no
 cached reports, the API performs a lightweight on-demand SEC sync for that one
 company and returns the cached result.
 
+On-demand SEC sync uses a 24-hour freshness check against `sec_sync_runs`.
+Recent `success`, `empty`, and `failed` states are reused so repeated searches do
+not keep calling SEC for the same company.
+
 Generate SEC sync SQL without writing to Supabase:
 
 ```bash
