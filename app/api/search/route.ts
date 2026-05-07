@@ -4,6 +4,7 @@ import {
   isFreshCninfoSyncRun,
   syncCninfoReportsForCompany,
 } from "@/lib/cninfo-on-demand";
+import { isLikelyActiveCnCompany } from "@/lib/cn-company-status";
 import { normalizeQuery } from "@/lib/normalize";
 import {
   createServiceSupabaseClient,
@@ -78,7 +79,7 @@ async function fetchAllCompanies(supabase: ReturnType<typeof createServiceSupaba
     if (page.length < pageSize) break;
   }
 
-  return rows.map(mapCompany);
+  return rows.map(mapCompany).filter(isLikelyActiveCnCompany);
 }
 
 async function fetchAllAliases(supabase: ReturnType<typeof createServiceSupabaseClient>) {

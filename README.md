@@ -24,7 +24,7 @@ Repository:
 当前已同步：
 
 - 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
-- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，并缓存 1973 条 CNINFO 财报元数据；长尾公司可按需补数据
+- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，默认活跃口径 5955 家，并缓存 1973 条 CNINFO 财报元数据；长尾公司可按需补数据
 
 ## Local Development
 
@@ -143,10 +143,12 @@ npm run sync:cninfo
 npm run sync:cninfo -- --limit=20
 npm run sync:cninfo -- --offset=20 --limit=20
 npm run sync:cninfo -- --symbol=300059
+npm run sync:cninfo -- --offset=300 --limit=100 --include-inactive
 npm run sync:cninfo:coverage
 npm run sync:cninfo:coverage -- --status=missing --limit=50
 npm run sync:cninfo:coverage -- --status=with_reports --limit=50
 npm run sync:cninfo:coverage -- --status=without_reports --limit=50
+npm run sync:cninfo:coverage -- --include-inactive --limit=50
 ```
 
 `sync:cninfo:companies` reads the official CNINFO stock list from
@@ -159,6 +161,9 @@ limit from the official CNINFO list. `sync:cninfo` then uses exact
 The frontend `/api/search` path also performs lightweight on-demand CNINFO sync
 when a matched A-share company has no cached reports. `cninfo_sync_runs` gives
 that path a 24-hour TTL, so repeated searches do not keep calling CNINFO.
+
+A-share search, batch CNINFO sync, and coverage reports exclude likely inactive
+historical symbols by default, currently names containing `退` or `PT`.
 
 Rebuild recent reports:
 

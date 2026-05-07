@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { existsSync, readFileSync } from "node:fs";
+import { isLikelyActiveCnCompanyName } from "@/lib/cn-company-status";
 
 function loadLocalEnv() {
   if (!existsSync(".env.local")) return;
@@ -29,6 +30,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const statusArg = process.argv.find((arg) => arg.startsWith("--status="))?.split("=")[1];
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const includeInactive = process.argv.includes("--include-inactive");
 const limit = limitArg ? Number(limitArg) : 50;
 
 const allowedStatuses = [
@@ -82,6 +84,7 @@ type CoverageRow = {
   name: string;
   exchange: string;
   orgId: string | null;
+  active: boolean;
   latestStatus: SyncRunRow["status"] | "missing";
   latestSyncedCount: number;
   reportCount: number;
@@ -174,6 +177,7 @@ function buildCoverage(
       name: company.display_name,
       exchange: company.exchange,
       orgId: company.org_id,
+      active: isLikelyActiveCnCompanyName(company.display_name),
       latestStatus: latest?.status ?? "missing",
       latestSyncedCount: latest?.synced_count ?? 0,
       reportCount: reportCounts.get(company.id) ?? 0,
@@ -185,6 +189,7 @@ function buildCoverage(
 
 function printSummary(rows: CoverageRow[], cninfoReportCount: number) {
   const total = rows.length;
+  const active = rows.filter((row) => row.active).length;
   const success = rows.filter((row) => row.latestStatus === "success").length;
   const empty = rows.filter((row) => row.latestStatus === "empty").length;
   const failed = rows.filter((row) => row.latestStatus === "failed").length;
@@ -197,6 +202,8 @@ function printSummary(rows: CoverageRow[], cninfoReportCount: number) {
       {
         companies: {
           total,
+          active,
+          likelyInactive: total - active,
           withOrgId,
           withoutOrgId: total - withOrgId,
           latestSuccess: success,
@@ -230,7 +237,9 @@ async function main() {
     fetchAllSyncRuns(),
   ]);
 
-  const coverage = buildCoverage(companies, reports, syncRuns);
+  const coverage = buildCoverage(companies, reports, syncRuns).filter(
+    (row) => includeInactive || row.active,
+  );
   printSummary(coverage, reports.length);
 
   const rows = filterRows(coverage)
@@ -245,6 +254,7 @@ async function main() {
       latestCount: row.latestSyncedCount,
       finishedAt: row.finishedAt ?? "",
       exchange: row.exchange,
+      active: row.active,
       error: row.error,
       name: row.name,
     })),
