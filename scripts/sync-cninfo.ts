@@ -256,15 +256,32 @@ async function main() {
     (company) => includeInactive || isLikelyActiveCnCompanyName(company.display_name),
   );
   let total = 0;
+  let successCount = 0;
+  let emptyCount = 0;
+  let failedCount = 0;
 
   for (const company of companies) {
-    const count = await syncCompany(company);
-    total += count;
-    console.log(`${company.symbol}: synced ${count} CNINFO reports`);
+    try {
+      const count = await syncCompany(company);
+      total += count;
+      if (count > 0) {
+        successCount += 1;
+      } else {
+        emptyCount += 1;
+      }
+      console.log(`${company.symbol}: synced ${count} CNINFO reports`);
+    } catch (error) {
+      failedCount += 1;
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`${company.symbol}: failed ${message}`);
+    }
+
     await sleep(1000);
   }
 
-  console.log(`CNINFO sync completed. Synced ${total} reports for ${companies.length} companies.`);
+  console.log(
+    `CNINFO sync completed. Synced ${total} reports for ${companies.length} companies. success=${successCount} empty=${emptyCount} failed=${failedCount}.`,
+  );
 }
 
 main().catch((error) => {
