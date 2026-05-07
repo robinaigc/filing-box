@@ -26,6 +26,19 @@
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
 }
 
+body:has(.theme-checkbox:checked) {
+  color-scheme: dark;
+  --bg: #090b0e;
+  --surface: rgba(15, 18, 24, 0.78);
+  --surface-strong: #10141b;
+  --text: #f4f6f8;
+  --muted: #9aa3af;
+  --line: #252b35;
+  --accent: #7aa2ff;
+  --accent-soft: rgba(122, 162, 255, 0.14);
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+}
+
 * {
   box-sizing: border-box;
 }
