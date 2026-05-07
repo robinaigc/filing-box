@@ -28,10 +28,10 @@ export function PopularReports({ reports, dataSourceLabel, onSelectCompany }: Po
       </div>
       <div className="recent-list">
         {reports.map((report) => (
-          <button
+          <a
             key={report.id}
             className="recent-row"
-            type="button"
+            href={`/?q=${encodeURIComponent(report.companyName)}`}
             onClick={() => onSelectCompany(report.companyName)}
           >
             <span className="recent-company">{report.companyName}</span>
@@ -41,7 +41,7 @@ export function PopularReports({ reports, dataSourceLabel, onSelectCompany }: Po
             <span>{report.year}</span>
             <span>{report.filingDate}</span>
             <span>{report.downloadUrl ? "可下载" : "官方来源"}</span>
-          </button>
+          </a>
         ))}
       </div>
     </section>

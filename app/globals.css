@@ -111,6 +111,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  position: relative;
   min-height: 40px;
   padding: 0 14px;
   border: 1px solid var(--line);
@@ -120,6 +121,33 @@ button:disabled {
   box-shadow: var(--shadow);
   cursor: pointer;
   user-select: none;
+}
+
+.theme-checkbox {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.theme-icon::before {
+  content: "○";
+}
+
+.theme-checkbox:checked ~ .theme-icon::before {
+  content: "☾";
+}
+
+.theme-text-dark {
+  display: none;
+}
+
+.theme-checkbox:checked ~ .theme-text-light {
+  display: none;
+}
+
+.theme-checkbox:checked ~ .theme-text-dark {
+  display: inline;
 }
 
 .hero {
@@ -236,11 +264,11 @@ button:disabled {
 
 .filter-select {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 42px;
-  padding: 6px 8px 6px 12px;
+  padding: 6px 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
@@ -253,72 +281,15 @@ button:disabled {
   font-weight: 500;
 }
 
-.filter-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+.filter-native {
   min-height: 30px;
   border: 0;
   background: transparent;
   color: var(--text);
-  font-weight: 700;
-  list-style: none;
-  cursor: pointer;
-}
-
-.chevron {
-  width: 7px;
-  height: 7px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-}
-
-.filter-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 20;
-  display: grid;
-  min-width: 100%;
-  width: max-content;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--surface-strong);
-  box-shadow: var(--shadow);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-4px);
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease;
-}
-
-.filter-menu.open {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.filter-option {
-  min-width: 108px;
-  min-height: 34px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--text);
   font-size: 13px;
-  font-weight: 600;
-  text-align: left;
-  white-space: nowrap;
-}
-
-.filter-option:hover,
-.filter-option.selected {
-  background: var(--accent-soft);
-  color: var(--accent);
+  font-weight: 700;
+  outline: 0;
+  cursor: pointer;
 }
 
 .result-region {
@@ -382,6 +353,7 @@ button:disabled {
   background: transparent;
   color: var(--text);
   text-align: left;
+  text-decoration: none;
   transition:
     background 160ms ease,
     transform 160ms ease;

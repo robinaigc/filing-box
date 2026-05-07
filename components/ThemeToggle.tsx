@@ -15,7 +15,7 @@ export function ThemeToggle() {
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
 
-  function toggleTheme() {
+  function handleChange() {
     setTheme((currentTheme) => {
       const nextTheme = currentTheme === "dark" ? "light" : "dark";
       localStorage.setItem("theme", nextTheme);
@@ -25,14 +25,17 @@ export function ThemeToggle() {
   }
 
   return (
-    <button
-      aria-label="切换暗黑模式"
-      className="theme-toggle"
-      type="button"
-      onClick={toggleTheme}
-    >
-      <span aria-hidden="true">{theme === "dark" ? "☾" : "○"}</span>
-      <span>{theme === "dark" ? "Dark" : "Light"}</span>
-    </button>
+    <label className="theme-toggle">
+      <input
+        aria-label="切换暗黑模式"
+        className="theme-checkbox"
+        type="checkbox"
+        checked={theme === "dark"}
+        onChange={handleChange}
+      />
+      <span aria-hidden="true" className="theme-icon" />
+      <span className="theme-text theme-text-light">Light</span>
+      <span className="theme-text theme-text-dark">Dark</span>
+    </label>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import type { Market } from "@/lib/types";
-import { useState } from "react";
 
 export type Filters = {
   market: "all" | Market;
@@ -48,7 +48,7 @@ type Option = {
   value: string;
 };
 
-type FilterSelectProps = {
+type NativeFilterSelectProps = {
   id: keyof Filters;
   label: string;
   value: string;
@@ -56,65 +56,48 @@ type FilterSelectProps = {
   onSelect: (value: string) => void;
 };
 
-function FilterSelect({ id, label, value, options, onSelect }: FilterSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const selected = options.find((option) => option.value === value) ?? options[0];
+function NativeFilterSelect({ id, label, value, options, onSelect }: NativeFilterSelectProps) {
+  function handleChange(event: ChangeEvent<HTMLSelectElement>) {
+    onSelect(event.target.value);
+  }
 
   return (
-    <div className="filter-select">
-      <button
-        className="filter-trigger"
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={`${id}-options`}
-        onClick={() => setIsOpen((open) => !open)}
-        onBlur={() => window.setTimeout(() => setIsOpen(false), 140)}
+    <label className="filter-select" htmlFor={`${id}-filter`}>
+      <span className="filter-label">{label}</span>
+      <select
+        id={`${id}-filter`}
+        className="filter-native"
+        value={value}
+        onChange={handleChange}
       >
-        <span className="filter-label">{label}</span>
-        <span>{selected.label}</span>
-        <span className="chevron" aria-hidden="true" />
-      </button>
-      <div className={isOpen ? "filter-menu open" : "filter-menu"} id={`${id}-options`} role="listbox">
         {options.map((option) => (
-          <button
-            key={option.value}
-            className={option.value === value ? "filter-option selected" : "filter-option"}
-            type="button"
-            role="option"
-            aria-selected={option.value === value}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => {
-              onSelect(option.value);
-              setIsOpen(false);
-            }}
-          >
+          <option key={option.value} value={option.value}>
             {option.label}
-          </button>
+          </option>
         ))}
-      </div>
-    </div>
+      </select>
+    </label>
   );
 }
 
 export function FilterBar({ filters, onChange }: FilterBarProps) {
   return (
     <div className="filter-bar" aria-label="财报筛选器">
-      <FilterSelect
+      <NativeFilterSelect
         id="market"
         label="市场"
         value={filters.market}
         options={marketOptions}
         onSelect={(value) => onChange({ ...filters, market: value as Filters["market"] })}
       />
-      <FilterSelect
+      <NativeFilterSelect
         id="reportType"
         label="报告类型"
         value={filters.reportType}
         options={reportTypeOptions}
         onSelect={(value) => onChange({ ...filters, reportType: value })}
       />
-      <FilterSelect
+      <NativeFilterSelect
         id="year"
         label="年份"
         value={filters.year}
