@@ -181,15 +181,20 @@ function exchangeForSymbol(symbol: string): string {
   return "SZSE";
 }
 
-function symbolsToImport(): string[] {
-  const source = symbolsArg
-    ? symbolsArg
-        .split(",")
-        .map((symbol) => symbol.trim())
-        .filter(Boolean)
-    : defaultSymbols;
+function symbolsToImport(stocks: CninfoStock[]): string[] {
+  if (symbolsArg) {
+    return symbolsArg
+      .split(",")
+      .map((symbol) => symbol.trim())
+      .filter(Boolean)
+      .slice(offset, offset + limit);
+  }
 
-  return source.slice(offset, offset + limit);
+  const stockSymbols = stocks.map((stock) => stock.code);
+  const prioritySymbols = defaultSymbols.filter((symbol) => stockSymbols.includes(symbol));
+  const remainingSymbols = stockSymbols.filter((symbol) => !prioritySymbols.includes(symbol));
+
+  return [...prioritySymbols, ...remainingSymbols].slice(offset, offset + limit);
 }
 
 function uniqueAliases(rows: AliasUpsertRow[]): AliasUpsertRow[] {
@@ -313,8 +318,9 @@ function buildAliases(companies: CompanyUpsertRow[]): AliasUpsertRow[] {
 }
 
 async function main() {
-  const symbols = symbolsToImport();
-  const companies = await mergeExistingCompanies(buildCompanies(await fetchCninfoStocks(), symbols));
+  const stocks = await fetchCninfoStocks();
+  const symbols = symbolsToImport(stocks);
+  const companies = await mergeExistingCompanies(buildCompanies(stocks, symbols));
   const aliasRows = buildAliases(companies);
 
   if (dryRun) {

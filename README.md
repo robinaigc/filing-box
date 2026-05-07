@@ -24,7 +24,7 @@ Repository:
 当前已同步：
 
 - 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
-- A 股：已导入前 50 家轻量公司池，并缓存前 20 家的 153 条 CNINFO 财报元数据；原 5 家 seed 公司仍保留
+- A 股：已导入前 200 家轻量公司池，并缓存 932 条 CNINFO 财报元数据；长尾公司可按需补数据
 
 ## Local Development
 
@@ -147,8 +147,10 @@ npm run sync:cninfo -- --symbol=300059
 
 `sync:cninfo:companies` reads the official CNINFO stock list from
 `https://www.cninfo.com.cn/new/data/szse_stock.json`, resolves each company's
-`org_id`, and writes company records plus aliases into Supabase. `sync:cninfo`
-then uses exact `symbol,org_id` parameters to fetch only periodic reports.
+`org_id`, and writes company records plus aliases into Supabase. It starts with
+the curated priority pool, then automatically fills the remaining requested
+limit from the official CNINFO list. `sync:cninfo` then uses exact
+`symbol,org_id` parameters to fetch only periodic reports.
 
 The frontend `/api/search` path also performs lightweight on-demand CNINFO sync
 when a matched A-share company has no cached reports. `cninfo_sync_runs` gives

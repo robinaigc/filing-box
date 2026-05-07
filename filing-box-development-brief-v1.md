@@ -1145,13 +1145,14 @@ scripts/sync-sec.ts
 7. scripts/sync-cninfo-companies.ts 会自动解析 symbol、简称、exchange、org_id，并写入 companies 与 company_aliases
 8. scripts/sync-cninfo-companies.ts 支持 --offset、--limit、--symbols 与 --dry-run
 9. scripts/sync-cninfo.ts 已支持 .env.local、--offset 与 --limit，用于分批同步财报
-10. 当前已导入前 50 家 A股轻量公司池
-11. 当前已同步前 20 家 A股公司的 153 条 CNINFO 财报元数据
+10. 当前已导入前 200 家 A股轻量公司池
+11. 当前已缓存 932 条 CNINFO 财报元数据
 12. A股仍采用轻量方案：只存公司、别名、财报元数据、官方来源链接和 PDF 链接，不存 PDF 文件本体
 13. 已新增 A股按需同步模块：lib/cninfo-on-demand.ts
 14. /api/search 命中 A股公司但无缓存财报时，会服务端按需拉取 CNINFO 定期报告并写入 reports
 15. 已新增 CNINFO 同步状态表 migration：supabase/migrations/20260507052000_add_cninfo_sync_runs.sql
 16. /api/search 已加入 CNINFO 24 小时 TTL：最近 success / empty / failed 都不会重复打 CNINFO
+17. scripts/sync-cninfo-companies.ts 已支持“优先公司池 + 巨潮官方清单自动补足”，当前可通过 --limit=200 扩展到 200 家
 ```
 
 当前部署状态：
