@@ -1166,6 +1166,9 @@ scripts/sync-sec.ts
 9. 仍不存储 PDF 文件本体，只保存 SEC 官方 HTML/PDF 文件 URL
 10. scripts/sync-sec-companies.ts 支持 --offset 与 --limit，用于分批导入公司池
 11. scripts/sync-sec.ts 支持 --offset 与 --limit，用于分批同步财报
+12. 已新增 SEC 同步状态表 migration：supabase/migrations/20260507040500_add_sec_sync_runs.sql
+13. scripts/sync-sec.ts 会按公司记录 success / empty / failed、同步数量、错误信息和批次参数
+14. 如果 sec_sync_runs 表尚未应用到 Supabase，财报同步不会中断，只会输出状态日志写入警告
 ```
 
 ## 30. 阶段二：A股数据源

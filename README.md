@@ -62,6 +62,7 @@ Schema migration:
 
 ```txt
 supabase/migrations/20260506182500_initial_filing_box_schema.sql
+supabase/migrations/20260507040500_add_sec_sync_runs.sql
 ```
 
 Seed SQL:
@@ -101,6 +102,10 @@ npm run sync:sec -- --limit=100
 npm run sync:sec -- --offset=100 --limit=100
 npm run sync:sec -- --symbol=AAPL
 ```
+
+`sync:sec` records per-company sync status in `public.sec_sync_runs` when the
+`20260507040500_add_sec_sync_runs.sql` migration has been applied. If the table
+is not present yet, sync still runs and prints a warning for status logging only.
 
 Generate SEC sync SQL without writing to Supabase:
 

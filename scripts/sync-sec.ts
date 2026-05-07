@@ -75,6 +75,8 @@ type SecSubmission = {
   };
 };
 
+type SyncStatus = "success" | "empty" | "failed";
+
 function compactCik(cik: string): string {
   return cik.replace(/^0+/, "").padStart(10, "0");
 }
@@ -169,6 +171,31 @@ async function syncCompany(company: CompanyRow) {
   return rows.length;
 }
 
+async function recordSyncRun(
+  company: CompanyRow,
+  status: SyncStatus,
+  syncedCount: number,
+  startedAt: string,
+  errorMessage?: string,
+) {
+  const { error } = await supabase.from("sec_sync_runs").insert({
+    company_id: company.id,
+    symbol: company.symbol,
+    cik: company.cik,
+    status,
+    synced_count: syncedCount,
+    error_message: errorMessage ? errorMessage.slice(0, 2000) : null,
+    offset_value: offset,
+    limit_value: limit ?? null,
+    started_at: startedAt,
+    finished_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.warn(`${company.symbol}: failed to record sync status: ${error.message}`);
+  }
+}
+
 async function main() {
   let query = supabase
     .from("companies")
@@ -188,16 +215,35 @@ async function main() {
     limit === undefined ? undefined : offset + limit,
   );
   let total = 0;
+  let successCount = 0;
+  let emptyCount = 0;
+  let failedCount = 0;
 
   for (const company of companies) {
-    const count = await syncCompany(company);
-    total += count;
-    console.log(`${company.symbol}: synced ${count} SEC filings`);
+    const startedAt = new Date().toISOString();
+
+    try {
+      const count = await syncCompany(company);
+      const status: SyncStatus = count > 0 ? "success" : "empty";
+      total += count;
+
+      if (status === "success") successCount += 1;
+      if (status === "empty") emptyCount += 1;
+
+      await recordSyncRun(company, status, count, startedAt);
+      console.log(`${company.symbol}: synced ${count} SEC filings`);
+    } catch (error) {
+      failedCount += 1;
+      const message = error instanceof Error ? error.message : String(error);
+      await recordSyncRun(company, "failed", 0, startedAt, message);
+      console.error(`${company.symbol}: failed ${message}`);
+    }
+
     await sleep(1100);
   }
 
   console.log(
-    `SEC sync completed. Synced ${total} filings for ${companies.length} companies from offset ${offset}.`,
+    `SEC sync completed. Synced ${total} filings for ${companies.length} companies from offset ${offset}. success=${successCount} empty=${emptyCount} failed=${failedCount}.`,
   );
 }
 
