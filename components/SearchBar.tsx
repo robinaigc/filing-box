@@ -16,10 +16,11 @@ export function SearchBar({ value, isLoading, onChange, onSubmit }: SearchBarPro
   }
 
   return (
-    <form className="search-panel" onSubmit={handleSubmit}>
+    <form className="search-panel" action="/" method="get" onSubmit={handleSubmit}>
       <div className="search-shell">
         <input
           className="search-input"
+          name="q"
           value={value}
           placeholder="搜索公司名或股票代码，例如 AAPL、苹果、600519、贵州茅台"
           aria-label="搜索公司名或股票代码"

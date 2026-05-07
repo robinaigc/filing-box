@@ -61,41 +61,40 @@ function FilterSelect({ id, label, value, options, onSelect }: FilterSelectProps
   const selected = options.find((option) => option.value === value) ?? options[0];
 
   return (
-    <div className="filter-select">
+    <details
+      className="filter-select"
+      open={isOpen}
+      onToggle={(event) => setIsOpen(event.currentTarget.open)}
+    >
       <span className="filter-label">{label}</span>
-      <button
+      <summary
         className="filter-trigger"
-        type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={`${id}-options`}
-        onClick={() => setIsOpen((open) => !open)}
-        onBlur={() => window.setTimeout(() => setIsOpen(false), 120)}
       >
         <span>{selected.label}</span>
         <span className="chevron" aria-hidden="true" />
-      </button>
-      {isOpen ? (
-        <div className="filter-menu" id={`${id}-options`} role="listbox">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              className={option.value === value ? "filter-option selected" : "filter-option"}
-              type="button"
-              role="option"
-              aria-selected={option.value === value}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                onSelect(option.value);
-                setIsOpen(false);
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
+      </summary>
+      <div className={isOpen ? "filter-menu open" : "filter-menu"} id={`${id}-options`} role="listbox">
+        {options.map((option) => (
+          <button
+            key={option.value}
+            className={option.value === value ? "filter-option selected" : "filter-option"}
+            type="button"
+            role="option"
+            aria-selected={option.value === value}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => {
+              onSelect(option.value);
+              setIsOpen(false);
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </details>
   );
 }
 

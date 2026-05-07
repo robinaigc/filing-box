@@ -23,14 +23,18 @@ export function ThemeToggle() {
   }
 
   return (
-    <button
+    <label
       aria-label="切换暗黑模式"
       className="theme-toggle"
-      type="button"
-      onClick={toggleTheme}
     >
+      <input
+        className="theme-checkbox"
+        type="checkbox"
+        checked={theme === "dark"}
+        onChange={toggleTheme}
+      />
       <span aria-hidden="true">{theme === "dark" ? "☾" : "○"}</span>
       <span>{theme === "dark" ? "Dark" : "Light"}</span>
-    </button>
+    </label>
   );
 }
