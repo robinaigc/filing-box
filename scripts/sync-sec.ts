@@ -207,13 +207,16 @@ async function main() {
     query = query.eq("symbol", symbolArg.toUpperCase());
   }
 
+  if (limit !== undefined) {
+    query = query.range(offset, offset + limit - 1);
+  } else if (offset > 0) {
+    query = query.range(offset, offset + 999);
+  }
+
   const { data, error } = await query.order("symbol", { ascending: true });
   if (error) throw error;
 
-  const companies = ((data ?? []) as CompanyRow[]).slice(
-    offset,
-    limit === undefined ? undefined : offset + limit,
-  );
+  const companies = (data ?? []) as CompanyRow[];
   let total = 0;
   let successCount = 0;
   let emptyCount = 0;

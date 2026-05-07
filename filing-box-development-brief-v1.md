@@ -1157,8 +1157,8 @@ scripts/sync-sec.ts
 ```txt
 1. 已新增 SEC 公司池同步脚本：scripts/sync-sec-companies.ts
 2. 公司池来源：SEC 官方 https://www.sec.gov/files/company_tickers_exchange.json
-3. 当前已导入前 1000 家美股公司到 Supabase companies 表
-4. 当前已同步 12369 条 SEC 财报元数据
+3. 当前已导入前 2000 家美股公司到 Supabase companies 表
+4. 当前已同步 21374 条 SEC 财报元数据
 5. 新增公司会写入 ticker、官方英文名、交易所、CIK 和英文 aliases
 6. 已有 seed 公司按 symbol 复用原 id，避免破坏 Apple、Microsoft、NVIDIA 等已有别名和展示名
 7. 已新增最近披露重建脚本：scripts/rebuild-recent-reports.ts
@@ -1169,6 +1169,8 @@ scripts/sync-sec.ts
 12. 已新增 SEC 同步状态表 migration：supabase/migrations/20260507040500_add_sec_sync_runs.sql
 13. scripts/sync-sec.ts 会按公司记录 success / empty / failed、同步数量、错误信息和批次参数
 14. 如果 sec_sync_runs 表尚未应用到 Supabase，财报同步不会中断，只会输出状态日志写入警告
+15. 已新增 SEC 同步状态查询脚本：scripts/sec-sync-status.ts
+16. 当前 sec_sync_runs 已记录 1005 条同步状态，其中 success 955、empty 50、failed 0
 ```
 
 ## 30. 阶段二：A股数据源
