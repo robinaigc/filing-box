@@ -1146,7 +1146,7 @@ scripts/sync-sec.ts
 8. scripts/sync-cninfo-companies.ts 支持 --offset、--limit、--symbols 与 --dry-run
 9. scripts/sync-cninfo.ts 已支持 .env.local、--offset 与 --limit，用于分批同步财报
 10. 当前已导入巨潮公开清单中的 6107 家 A股公司池，默认活跃口径 5955 家，明显历史/退市口径 152 家
-11. 当前已缓存 3890 条 CNINFO 财报元数据，覆盖 539 家 A股公司，其余公司等待预同步或按需同步
+11. 当前已缓存 4481 条 CNINFO 财报元数据，覆盖 630 家 A股公司，其余公司等待预同步或按需同步
 12. A股仍采用轻量方案：只存公司、别名、财报元数据、官方来源链接和 PDF 链接，不存 PDF 文件本体
 13. 已新增 A股按需同步模块：lib/cninfo-on-demand.ts
 14. /api/search 命中 A股公司但无缓存财报时，会服务端按需拉取 CNINFO 定期报告并写入 reports
