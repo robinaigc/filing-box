@@ -61,21 +61,20 @@ function FilterSelect({ id, label, value, options, onSelect }: FilterSelectProps
   const selected = options.find((option) => option.value === value) ?? options[0];
 
   return (
-    <details
-      className="filter-select"
-      open={isOpen}
-      onToggle={(event) => setIsOpen(event.currentTarget.open)}
-    >
-      <summary
+    <div className="filter-select">
+      <button
         className="filter-trigger"
+        type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={`${id}-options`}
+        onClick={() => setIsOpen((open) => !open)}
+        onBlur={() => window.setTimeout(() => setIsOpen(false), 140)}
       >
         <span className="filter-label">{label}</span>
         <span>{selected.label}</span>
         <span className="chevron" aria-hidden="true" />
-      </summary>
+      </button>
       <div className={isOpen ? "filter-menu open" : "filter-menu"} id={`${id}-options`} role="listbox">
         {options.map((option) => (
           <button
@@ -94,7 +93,7 @@ function FilterSelect({ id, label, value, options, onSelect }: FilterSelectProps
           </button>
         ))}
       </div>
-    </details>
+    </div>
   );
 }
 
