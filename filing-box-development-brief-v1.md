@@ -1152,6 +1152,20 @@ scripts/sync-sec.ts
 5. PDF 文件仍不存储在 Supabase，线上只通过官方 source_url/download_url 跳转到 SEC 或 CNINFO
 ```
 
+当前美股扩展状态：
+
+```txt
+1. 已新增 SEC 公司池同步脚本：scripts/sync-sec-companies.ts
+2. 公司池来源：SEC 官方 https://www.sec.gov/files/company_tickers_exchange.json
+3. 当前已导入前 100 家美股公司到 Supabase companies 表
+4. 当前已为前 100 家美股公司同步 1775 条 SEC 财报元数据
+5. 新增公司会写入 ticker、官方英文名、交易所、CIK 和英文 aliases
+6. 已有 seed 公司按 symbol 复用原 id，避免破坏 Apple、Microsoft、NVIDIA 等已有别名和展示名
+7. 已新增最近披露重建脚本：scripts/rebuild-recent-reports.ts
+8. 同步后已重建 recent_reports，首页最近披露可展示最新 SEC 财报
+9. 仍不存储 PDF 文件本体，只保存 SEC 官方 HTML/PDF 文件 URL
+```
+
 ## 30. 阶段二：A股数据源
 
 第二阶段使用巨潮资讯 CNINFO。

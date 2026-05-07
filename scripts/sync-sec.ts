@@ -1,10 +1,37 @@
 import { createClient } from "@supabase/supabase-js";
+import { existsSync, readFileSync } from "node:fs";
+
+function loadLocalEnv() {
+  if (!existsSync(".env.local")) return;
+
+  const lines = readFileSync(".env.local", "utf8").split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, "");
+
+    process.env[key] ??= value;
+  }
+}
+
+loadLocalEnv();
 
 const allowedForms = new Set(["10-K", "10-Q", "20-F", "6-K", "40-F"]);
 const secUserAgent = process.env.SEC_USER_AGENT;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const symbolArg = process.argv.find((arg) => arg.startsWith("--symbol="))?.split("=")[1];
+const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const limit = limitArg ? Number(limitArg) : undefined;
 
 if (!secUserAgent) {
   throw new Error("SEC_USER_AGENT is required, for example FilingBox robin990083@gmail.com");
@@ -12,6 +39,10 @@ if (!secUserAgent) {
 
 if (!supabaseUrl || !serviceRoleKey) {
   throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+}
+
+if (limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
+  throw new Error("--limit must be a positive integer.");
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -146,7 +177,7 @@ async function main() {
   const { data, error } = await query.order("symbol", { ascending: true });
   if (error) throw error;
 
-  const companies = (data ?? []) as CompanyRow[];
+  const companies = ((data ?? []) as CompanyRow[]).slice(0, limit);
   let total = 0;
 
   for (const company of companies) {

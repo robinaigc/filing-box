@@ -10,9 +10,11 @@
     "typecheck": "tsc --noEmit",
     "test:acceptance": "tsx scripts/acceptance.ts",
     "db:seed:generate": "tsx scripts/generate-seed-sql.ts",
+    "sync:sec:companies": "tsx scripts/sync-sec-companies.ts",
     "sync:sec": "tsx scripts/sync-sec.ts",
     "sync:sec:sql": "tsx scripts/generate-sec-sync-sql.ts",
-    "sync:cninfo": "tsx scripts/sync-cninfo.ts"
+    "sync:cninfo": "tsx scripts/sync-cninfo.ts",
+    "db:recent:rebuild": "tsx scripts/rebuild-recent-reports.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
