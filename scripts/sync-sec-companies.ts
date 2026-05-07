@@ -30,8 +30,10 @@ const secUserAgent = process.env.SEC_USER_AGENT;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const offsetArg = process.argv.find((arg) => arg.startsWith("--offset="))?.split("=")[1];
 const dryRun = process.argv.includes("--dry-run");
 const limit = limitArg ? Number(limitArg) : 100;
+const offset = offsetArg ? Number(offsetArg) : 0;
 
 if (!secUserAgent) {
   throw new Error("SEC_USER_AGENT is required, for example FilingBox robin990083@gmail.com");
@@ -43,6 +45,10 @@ if (!supabaseUrl || !serviceRoleKey) {
 
 if (!Number.isInteger(limit) || limit <= 0) {
   throw new Error("--limit must be a positive integer.");
+}
+
+if (!Number.isInteger(offset) || offset < 0) {
+  throw new Error("--offset must be a non-negative integer.");
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -116,7 +122,7 @@ async function fetchSecCompanies(): Promise<CompanyUpsertRow[]> {
 
   const payload = (await response.json()) as SecTickerExchangeResponse;
 
-  return payload.data.slice(0, limit).map(([cik, name, symbol, exchange]) => ({
+  return payload.data.slice(offset, offset + limit).map(([cik, name, symbol, exchange]) => ({
     id: companyId(symbol),
     market: "US",
     symbol: symbol.toUpperCase(),
@@ -196,7 +202,9 @@ async function main() {
   const aliasRows = buildAliases(companies);
 
   if (dryRun) {
-    console.log(`Dry run: would upsert ${companies.length} companies and ${aliasRows.length} aliases.`);
+    console.log(
+      `Dry run: would upsert ${companies.length} companies and ${aliasRows.length} aliases from offset ${offset}.`,
+    );
     console.table(companies.slice(0, 10).map(({ symbol, name, exchange, cik }) => ({ symbol, name, exchange, cik })));
     return;
   }
@@ -211,7 +219,9 @@ async function main() {
     .upsert(aliasRows, { onConflict: "company_id,normalized_alias" });
   if (aliasError) throw aliasError;
 
-  console.log(`SEC companies sync completed. Upserted ${companies.length} companies and ${aliasRows.length} aliases.`);
+  console.log(
+    `SEC companies sync completed. Upserted ${companies.length} companies and ${aliasRows.length} aliases from offset ${offset}.`,
+  );
 }
 
 main().catch((error) => {

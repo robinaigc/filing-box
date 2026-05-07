@@ -6,7 +6,7 @@
 
 - Next.js + TypeScript + Tailwind CSS 单页应用
 - Supabase PostgreSQL 数据源
-- 美股 SEC EDGAR 数据已接入前 100 家 SEC 公司池
+- 美股 SEC EDGAR 数据已接入前 500 家 SEC 公司池
 - A 股巨潮资讯 CNINFO 数据已接入当前 seed 公司
 - Vercel 生产环境已发布
 - PDF 文件本体不存储在 Supabase，只保存官方来源链接和下载链接
@@ -21,7 +21,7 @@ Repository:
 
 当前已同步：
 
-- 美股：已从 SEC `company_tickers_exchange.json` 导入前 100 家公司，并同步 1775 条 SEC 财报元数据
+- 美股：已从 SEC `company_tickers_exchange.json` 导入前 500 家公司，并同步 3393 条 SEC 财报元数据
 - A 股：`600519`、`300750`、`300059`、`002594`、`600036`
 
 ## Local Development
@@ -94,9 +94,11 @@ Sync SEC EDGAR filings:
 ```bash
 npm run sync:sec:companies
 npm run sync:sec:companies -- --limit=100
+npm run sync:sec:companies -- --offset=100 --limit=400
 npm run sync:sec:companies -- --dry-run --limit=10
 npm run sync:sec
 npm run sync:sec -- --limit=100
+npm run sync:sec -- --offset=100 --limit=100
 npm run sync:sec -- --symbol=AAPL
 ```
 

@@ -31,7 +31,9 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const symbolArg = process.argv.find((arg) => arg.startsWith("--symbol="))?.split("=")[1];
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const offsetArg = process.argv.find((arg) => arg.startsWith("--offset="))?.split("=")[1];
 const limit = limitArg ? Number(limitArg) : undefined;
+const offset = offsetArg ? Number(offsetArg) : 0;
 
 if (!secUserAgent) {
   throw new Error("SEC_USER_AGENT is required, for example FilingBox robin990083@gmail.com");
@@ -43,6 +45,10 @@ if (!supabaseUrl || !serviceRoleKey) {
 
 if (limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
   throw new Error("--limit must be a positive integer.");
+}
+
+if (!Number.isInteger(offset) || offset < 0) {
+  throw new Error("--offset must be a non-negative integer.");
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -177,7 +183,10 @@ async function main() {
   const { data, error } = await query.order("symbol", { ascending: true });
   if (error) throw error;
 
-  const companies = ((data ?? []) as CompanyRow[]).slice(0, limit);
+  const companies = ((data ?? []) as CompanyRow[]).slice(
+    offset,
+    limit === undefined ? undefined : offset + limit,
+  );
   let total = 0;
 
   for (const company of companies) {
@@ -187,7 +196,9 @@ async function main() {
     await sleep(1100);
   }
 
-  console.log(`SEC sync completed. Synced ${total} filings for ${companies.length} companies.`);
+  console.log(
+    `SEC sync completed. Synced ${total} filings for ${companies.length} companies from offset ${offset}.`,
+  );
 }
 
 main().catch((error) => {
