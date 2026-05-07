@@ -143,6 +143,10 @@ npm run sync:cninfo
 npm run sync:cninfo -- --limit=20
 npm run sync:cninfo -- --offset=20 --limit=20
 npm run sync:cninfo -- --symbol=300059
+npm run sync:cninfo:coverage
+npm run sync:cninfo:coverage -- --status=missing --limit=50
+npm run sync:cninfo:coverage -- --status=with_reports --limit=50
+npm run sync:cninfo:coverage -- --status=without_reports --limit=50
 ```
 
 `sync:cninfo:companies` reads the official CNINFO stock list from

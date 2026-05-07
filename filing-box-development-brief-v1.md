@@ -1153,6 +1153,8 @@ scripts/sync-sec.ts
 15. 已新增 CNINFO 同步状态表 migration：supabase/migrations/20260507052000_add_cninfo_sync_runs.sql
 16. /api/search 已加入 CNINFO 24 小时 TTL：最近 success / empty / failed 都不会重复打 CNINFO
 17. scripts/sync-cninfo-companies.ts 已支持“优先公司池 + 巨潮官方清单自动补足”，当前可通过 --limit=200 扩展到 200 家
+18. 已新增 A股覆盖率报表脚本：scripts/cninfo-sync-coverage.ts
+19. scripts/cninfo-sync-coverage.ts 支持 --status=missing / with_reports / without_reports / success / empty / failed，用于后续扩容决策
 ```
 
 当前部署状态：
