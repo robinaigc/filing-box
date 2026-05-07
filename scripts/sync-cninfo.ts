@@ -1,11 +1,48 @@
 import { createClient } from "@supabase/supabase-js";
+import { existsSync, readFileSync } from "node:fs";
+
+function loadLocalEnv() {
+  if (!existsSync(".env.local")) return;
+
+  const lines = readFileSync(".env.local", "utf8").split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, "");
+
+    process.env[key] ??= value;
+  }
+}
+
+loadLocalEnv();
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const symbolArg = process.argv.find((arg) => arg.startsWith("--symbol="))?.split("=")[1];
+const limitArg = process.argv.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const offsetArg = process.argv.find((arg) => arg.startsWith("--offset="))?.split("=")[1];
+const limit = limitArg ? Number(limitArg) : undefined;
+const offset = offsetArg ? Number(offsetArg) : 0;
 
 if (!supabaseUrl || !serviceRoleKey) {
   throw new Error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+}
+
+if (limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
+  throw new Error("--limit must be a positive integer.");
+}
+
+if (!Number.isInteger(offset) || offset < 0) {
+  throw new Error("--offset must be a non-negative integer.");
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -151,6 +188,11 @@ async function fetchAnnouncements(company: CompanyRow): Promise<CninfoAnnounceme
 }
 
 async function syncCompany(company: CompanyRow) {
+  if (!company.org_id) {
+    console.warn(`${company.symbol}: missing CNINFO org_id, skipped`);
+    return 0;
+  }
+
   const announcements = await fetchAnnouncements(company);
   const rows = announcements
     .map((announcement) => {
@@ -197,6 +239,12 @@ async function main() {
 
   if (symbolArg) {
     query = query.eq("symbol", symbolArg);
+  }
+
+  if (limit !== undefined) {
+    query = query.range(offset, offset + limit - 1);
+  } else if (offset > 0) {
+    query = query.range(offset, offset + 999);
   }
 
   const { data, error } = await query.order("symbol", { ascending: true });

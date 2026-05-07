@@ -15,6 +15,7 @@
     "sync:sec:status": "tsx scripts/sec-sync-status.ts",
     "sync:sec:coverage": "tsx scripts/sec-sync-coverage.ts",
     "sync:sec:sql": "tsx scripts/generate-sec-sync-sql.ts",
+    "sync:cninfo:companies": "tsx scripts/sync-cninfo-companies.ts",
     "sync:cninfo": "tsx scripts/sync-cninfo.ts",
     "db:recent:rebuild": "tsx scripts/rebuild-recent-reports.ts"
   },

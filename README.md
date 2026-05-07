@@ -7,7 +7,7 @@
 - Next.js + TypeScript + Tailwind CSS 单页应用
 - Supabase PostgreSQL 数据源
 - 美股 SEC EDGAR 数据已接入前 2000 家 SEC 公司池
-- A 股巨潮资讯 CNINFO 数据已接入当前 seed 公司
+- A 股采用轻量公司池 + 分批 CNINFO 同步：公司 `org_id` 从巨潮公开股票清单解析，PDF 仍走官方链接
 - Vercel 生产环境已发布
 - PDF 文件本体不存储在 Supabase，只保存官方来源链接和下载链接
 - 美股采用热门预同步 + 长尾按需同步：搜索未缓存的美股公司时，服务端会从 SEC 拉取并缓存最新财报元数据
@@ -23,7 +23,7 @@ Repository:
 当前已同步：
 
 - 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
-- A 股：`600519`、`300750`、`300059`、`002594`、`600036`
+- A 股：已导入前 50 家轻量公司池，并缓存前 20 家的 153 条 CNINFO 财报元数据；原 5 家 seed 公司仍保留
 
 ## Local Development
 
@@ -133,9 +133,20 @@ npm run sync:sec:sql
 Sync CNINFO reports:
 
 ```bash
+npm run sync:cninfo:companies
+npm run sync:cninfo:companies -- --limit=50
+npm run sync:cninfo:companies -- --offset=50 --limit=50
+npm run sync:cninfo:companies -- --symbols=600519,300750 --dry-run
 npm run sync:cninfo
+npm run sync:cninfo -- --limit=20
+npm run sync:cninfo -- --offset=20 --limit=20
 npm run sync:cninfo -- --symbol=300059
 ```
+
+`sync:cninfo:companies` reads the official CNINFO stock list from
+`https://www.cninfo.com.cn/new/data/szse_stock.json`, resolves each company's
+`org_id`, and writes company records plus aliases into Supabase. `sync:cninfo`
+then uses exact `symbol,org_id` parameters to fetch only periodic reports.
 
 Rebuild recent reports:
 

@@ -1130,7 +1130,7 @@ scripts/sync-sec.ts
 1. 当前 7 家美股 seed 公司已完成 SEC 同步
 2. Supabase 中美股旧示例数据已清理
 3. 美股搜索结果优先展示真实 SEC 数据
-4. A股仍暂时使用 seed 数据，等待巨潮 CNINFO 导入
+4. A股已开始使用轻量公司池 + 分批 CNINFO 同步，不再只依赖 seed 数据
 ```
 
 当前 CNINFO 同步状态：
@@ -1140,6 +1140,14 @@ scripts/sync-sec.ts
 2. Supabase 中 A股旧示例数据已清理
 3. A股搜索结果展示真实 CNINFO PDF 链接
 4. CNINFO 查询必须使用 symbol + org_id 精确定位，不能只用关键词
+5. 已新增 A股公司池导入脚本：scripts/sync-cninfo-companies.ts
+6. A股公司池来源：巨潮公开股票清单 https://www.cninfo.com.cn/new/data/szse_stock.json
+7. scripts/sync-cninfo-companies.ts 会自动解析 symbol、简称、exchange、org_id，并写入 companies 与 company_aliases
+8. scripts/sync-cninfo-companies.ts 支持 --offset、--limit、--symbols 与 --dry-run
+9. scripts/sync-cninfo.ts 已支持 .env.local、--offset 与 --limit，用于分批同步财报
+10. 当前已导入前 50 家 A股轻量公司池
+11. 当前已同步前 20 家 A股公司的 153 条 CNINFO 财报元数据
+12. A股仍采用轻量方案：只存公司、别名、财报元数据、官方来源链接和 PDF 链接，不存 PDF 文件本体
 ```
 
 当前部署状态：
@@ -1188,11 +1196,13 @@ scripts/sync-sec.ts
 策略：
 
 ```txt
-1. 先手动或半自动导入 A股种子公司的近 3 年财报
-2. 不高频抓取巨潮
-3. 每条 A股财报保留巨潮官方来源链接
-4. 每条 A股财报保留 PDF 下载链接
-5. 不抓取无关公告
+1. 先通过巨潮公开股票清单导入轻量 A股公司池
+2. 用 symbol + org_id 分批同步近 3 年定期报告
+3. 不高频抓取巨潮
+4. 每条 A股财报保留巨潮官方来源链接
+5. 每条 A股财报保留 PDF 下载链接
+6. 不抓取无关公告
+7. 当前阶段优先热门 A股预同步，长尾 A股后续再演进为按需同步
 ```
 
 A股种子公司：
