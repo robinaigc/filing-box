@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import {
+  getRecentCninfoSyncRun,
+  isFreshCninfoSyncRun,
+  syncCninfoReportsForCompany,
+} from "@/lib/cninfo-on-demand";
 import { normalizeQuery } from "@/lib/normalize";
 import {
   createServiceSupabaseClient,
@@ -169,6 +174,21 @@ export async function GET(request: Request) {
       }
 
       await syncSecReportsForCompany(supabase, company);
+      reports = await getCompanyReports(supabase, company.id);
+    }
+
+    if (reports.length === 0 && company.market === "CN" && company.orgId) {
+      const recentSyncRun = await getRecentCninfoSyncRun(supabase, company.symbol);
+
+      if (isFreshCninfoSyncRun(recentSyncRun)) {
+        return NextResponse.json<SearchResult>({
+          status: "found",
+          company,
+          reports: [],
+        });
+      }
+
+      await syncCninfoReportsForCompany(supabase, company);
       reports = await getCompanyReports(supabase, company.id);
     }
 

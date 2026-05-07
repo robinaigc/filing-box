@@ -11,6 +11,7 @@
 - Vercel 生产环境已发布
 - PDF 文件本体不存储在 Supabase，只保存官方来源链接和下载链接
 - 美股采用热门预同步 + 长尾按需同步：搜索未缓存的美股公司时，服务端会从 SEC 拉取并缓存最新财报元数据
+- A 股采用热门预同步 + 长尾按需同步：搜索未缓存但已有 `org_id` 的 A 股公司时，服务端会从 CNINFO 拉取并缓存最新财报元数据
 
 Production:
 
@@ -64,6 +65,7 @@ Schema migration:
 ```txt
 supabase/migrations/20260506182500_initial_filing_box_schema.sql
 supabase/migrations/20260507040500_add_sec_sync_runs.sql
+supabase/migrations/20260507052000_add_cninfo_sync_runs.sql
 ```
 
 Seed SQL:
@@ -147,6 +149,10 @@ npm run sync:cninfo -- --symbol=300059
 `https://www.cninfo.com.cn/new/data/szse_stock.json`, resolves each company's
 `org_id`, and writes company records plus aliases into Supabase. `sync:cninfo`
 then uses exact `symbol,org_id` parameters to fetch only periodic reports.
+
+The frontend `/api/search` path also performs lightweight on-demand CNINFO sync
+when a matched A-share company has no cached reports. `cninfo_sync_runs` gives
+that path a 24-hour TTL, so repeated searches do not keep calling CNINFO.
 
 Rebuild recent reports:
 

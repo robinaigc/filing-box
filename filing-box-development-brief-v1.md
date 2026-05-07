@@ -1148,6 +1148,10 @@ scripts/sync-sec.ts
 10. 当前已导入前 50 家 A股轻量公司池
 11. 当前已同步前 20 家 A股公司的 153 条 CNINFO 财报元数据
 12. A股仍采用轻量方案：只存公司、别名、财报元数据、官方来源链接和 PDF 链接，不存 PDF 文件本体
+13. 已新增 A股按需同步模块：lib/cninfo-on-demand.ts
+14. /api/search 命中 A股公司但无缓存财报时，会服务端按需拉取 CNINFO 定期报告并写入 reports
+15. 已新增 CNINFO 同步状态表 migration：supabase/migrations/20260507052000_add_cninfo_sync_runs.sql
+16. /api/search 已加入 CNINFO 24 小时 TTL：最近 success / empty / failed 都不会重复打 CNINFO
 ```
 
 当前部署状态：
@@ -1202,7 +1206,7 @@ scripts/sync-sec.ts
 4. 每条 A股财报保留巨潮官方来源链接
 5. 每条 A股财报保留 PDF 下载链接
 6. 不抓取无关公告
-7. 当前阶段优先热门 A股预同步，长尾 A股后续再演进为按需同步
+7. 当前阶段采用热门 A股预同步 + 长尾 A股按需同步
 ```
 
 A股种子公司：

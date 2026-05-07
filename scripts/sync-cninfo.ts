@@ -110,8 +110,8 @@ function classifyReport(title: string):
 
   const year = Number(yearMatch[1]);
 
-  if (title.includes("年度报告")) return { reportType: "年报", period: "FY", year };
   if (title.includes("半年度报告")) return { reportType: "半年报", period: "H1", year };
+  if (title.includes("年度报告")) return { reportType: "年报", period: "FY", year };
   if (title.includes("第一季度报告")) return { reportType: "一季报", period: "Q1", year };
   if (title.includes("第三季度报告")) return { reportType: "三季报", period: "Q3", year };
 
