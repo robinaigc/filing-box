@@ -24,7 +24,7 @@ Repository:
 当前已同步：
 
 - 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
-- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，默认活跃口径 5955 家，并缓存 5172 条 CNINFO 财报元数据；长尾公司可按需补数据
+- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，默认活跃口径 5955 家，并缓存 10513 条 CNINFO 财报元数据；长尾公司可按需补数据
 
 ## Local Development
 
@@ -144,6 +144,8 @@ npm run sync:cninfo -- --limit=20
 npm run sync:cninfo -- --offset=20 --limit=20
 npm run sync:cninfo -- --symbol=300059
 npm run sync:cninfo -- --offset=300 --limit=100 --include-inactive
+npm run sync:cninfo:batches -- --offset=800 --batches=5 --batch-size=100
+npm run sync:cninfo:batches -- --offset=800 --batches=5 --batch-size=100 --dry-run
 npm run sync:cninfo:coverage
 npm run sync:cninfo:coverage -- --status=missing --limit=50
 npm run sync:cninfo:coverage -- --status=with_reports --limit=50
