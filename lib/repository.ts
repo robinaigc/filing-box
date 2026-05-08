@@ -81,7 +81,7 @@ function mapAlias(row: AliasRow): CompanyAlias {
   };
 }
 
-function mapReport(row: ReportRow): Report {
+export function mapReportRow(row: ReportRow): Report {
   return {
     id: row.id,
     companyId: row.company_id,
@@ -134,5 +134,5 @@ export async function getReportsAsync(): Promise<Report[]> {
     .order("filing_date", { ascending: false });
 
   if (error) throw error;
-  return ((data ?? []) as ReportRow[]).map(mapReport);
+  return ((data ?? []) as ReportRow[]).map(mapReportRow);
 }

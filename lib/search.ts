@@ -4,9 +4,12 @@ import {
   getAliasesAsync,
   getCompanies,
   getCompaniesAsync,
+  getDataSource,
   getReports,
   getReportsAsync,
+  mapReportRow,
 } from "@/lib/repository";
+import { supabase } from "@/lib/supabase";
 import type { Company, Report } from "@/lib/types";
 
 export type SearchResult =
@@ -137,6 +140,32 @@ export function getRecentReports(): Report[] {
 }
 
 export async function getRecentReportsAsync(): Promise<Report[]> {
+  if (getDataSource() === "supabase" && supabase) {
+    const { data, error } = await supabase
+      .from("reports")
+      .select(
+        "id, company_id, company_name, market, symbol, exchange, report_type, period, year, filing_date, title, source, source_url, download_url",
+      )
+      .order("filing_date", { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    const seenCompanyIds = new Set<string>();
+    const reports: Report[] = [];
+
+    for (const report of ((data ?? []) as Parameters<typeof mapReportRow>[0][]).map(
+      mapReportRow,
+    )) {
+      if (seenCompanyIds.has(report.companyId)) continue;
+      seenCompanyIds.add(report.companyId);
+      reports.push(report);
+      if (reports.length === 6) break;
+    }
+
+    return reports;
+  }
+
   const companies = await getCompaniesAsync();
   const reports = await getReportsAsync();
 
