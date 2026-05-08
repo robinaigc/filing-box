@@ -7,7 +7,7 @@ import type { Company, CompanyAlias, Report } from "@/lib/types";
 export type DataSource = "local" | "supabase";
 
 export function getDataSource(): DataSource {
-  return process.env.NEXT_PUBLIC_DATA_SOURCE === "supabase" && supabase ? "supabase" : "local";
+  return process.env.NEXT_PUBLIC_DATA_SOURCE !== "local" && supabase ? "supabase" : "local";
 }
 
 export function getCompanies(): Company[] {
