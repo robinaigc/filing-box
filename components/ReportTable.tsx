@@ -25,7 +25,6 @@ export function ReportTable({ reports }: ReportTableProps) {
             <th>披露日期</th>
             <th>报告标题</th>
             <th>来源</th>
-            <th>官方来源</th>
             <th>下载</th>
           </tr>
         </thead>
@@ -44,17 +43,6 @@ export function ReportTable({ reports }: ReportTableProps) {
               <td>{report.filingDate}</td>
               <td>{report.title}</td>
               <td>{report.source}</td>
-              <td>
-                {report.sourceUrl ? (
-                  <a className="table-link" href={report.sourceUrl} target="_blank" rel="noreferrer">
-                    打开
-                  </a>
-                ) : (
-                  <button className="table-link disabled" type="button" disabled>
-                    暂无来源
-                  </button>
-                )}
-              </td>
               <td>
                 {report.downloadUrl ? (
                   <a
