@@ -24,7 +24,20 @@ Repository:
 当前已同步：
 
 - 美股：已从 SEC `company_tickers_exchange.json` 导入前 2000 家公司，并缓存 21394 条 SEC 财报元数据
-- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，默认活跃口径 5955 家，并缓存 10513 条 CNINFO 财报元数据；长尾公司可按需补数据
+- A 股：已导入巨潮公开清单中的 6107 家 A 股公司池，默认活跃口径 5955 家，并缓存 10513 条 CNINFO 财报元数据，预同步覆盖 1457 家；其余长尾公司搜索时按需补数据
+
+## Delivery Status
+
+Current MVP scope is considered deliverable:
+
+- Single-page filing search and download workflow is implemented.
+- US filings use SEC EDGAR metadata with pre-sync plus on-demand sync.
+- A-share filings use CNINFO metadata with pre-sync plus on-demand sync.
+- Supabase stores metadata and official URLs only; PDF files are not stored.
+- Production is deployed at `https://filing-box.vercel.app`.
+
+Final smoke checks passed for `AAPL`, `MSFT`, `NVDA`, `600519`, `300750`,
+`东方财富`, `300056`, and a not-found query.
 
 ## Local Development
 

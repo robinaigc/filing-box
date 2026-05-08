@@ -1170,8 +1170,10 @@ scripts/sync-sec.ts
 1. GitHub 仓库已发布：https://github.com/robinaigc/filing-box
 2. Vercel 生产环境已发布：https://filing-box.vercel.app
 3. Vercel 生产环境已配置 Supabase public 环境变量
-4. 生产域名公开可访问，随机 hashed deployment URL 可能仍显示 Vercel Authentication
+4. Vercel 生产环境已配置服务端 SUPABASE_SERVICE_ROLE_KEY 与 SEC_USER_AGENT
 5. PDF 文件仍不存储在 Supabase，线上只通过官方 source_url/download_url 跳转到 SEC 或 CNINFO
+6. 当前 MVP 交付口径：A股接受“1457 家预同步 + 全 A股按需同步”，不再要求全量预同步到 3000 家
+7. 最终线上 smoke test 已通过：AAPL、MSFT、NVDA、600519、300750、东方财富、300056、不存在公司
 ```
 
 当前美股扩展状态：
